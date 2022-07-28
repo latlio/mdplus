@@ -21,10 +21,14 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Set up Git repository
-        uses: actions/checkout@v2
-      - name: Render document
-        uses: lc5415/rmarkdown-action@v1
-        with:
-          input_file: mdplus_directory_report.Rmd
-	  output_format: pdf_document
+      - uses: actions/checkout@v2
+      - uses: r-lib/actions/setup-r@v1
+      - uses: r-lib/actions/setup-pandoc@v1
+      - name: Install rmarkdown
+        run: Rscript -e 'install.packages("rmarkdown")'
+      - name: Render markdown
+        run: Rscript -e 'rmarkdown::render("mdplus_directory_report.Rmd", output_format = "pdf_document")'
+      - name: Commit new pdf
+        run: |
+          git commit mdplus_directory_report.pdf -m 'Render Airtable Report' || echo "No changes to commit"
+          git push origin || echo "No changes to commit"
