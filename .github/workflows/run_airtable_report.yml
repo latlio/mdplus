@@ -7,7 +7,7 @@ on:
   # Triggers the workflow on a cron schedule
   schedule:
 
-    - cron: 
+    - cron: "0 12 */1 * *"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -25,7 +25,7 @@ jobs:
       - uses: r-lib/actions/setup-r@v1
       - uses: r-lib/actions/setup-pandoc@v1
       - name: Install rmarkdown
-        run: Rscript -e 'install.packages("rmarkdown")'
+        run: Rscript -e 'install.packages(c("rmarkdown", "googlesheets4", "janitor", "knitr"))'
       - name: Render markdown
         run: Rscript -e 'rmarkdown::render("mdplus_directory_report.Rmd", output_format = "pdf_document")'
       - name: Commit new pdf
