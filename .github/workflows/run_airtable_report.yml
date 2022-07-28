@@ -1,0 +1,36 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Render Airtable Report
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on a cron schedule
+  schedule:
+
+    - cron: "0 12 */1 * *"
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "cron"
+  cron:
+    # The type of runner that the job will run on
+    runs-on: macOS-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v2
+      - uses: r-lib/actions/setup-r@v1
+      - uses: r-lib/actions/setup-pandoc@v1
+      - uses: r-lib/actions/setup-tinytex@v1
+      - name: Install packages
+        run: Rscript -e 'install.packages(c("rmarkdown"))'
+      - name: Render markdown
+        run: Rscript -e 'rmarkdown::render("mdplus_directory_report.Rmd", output_format = "pdf_document")'
+      - name: Commit new pdf
+        run: |
+          git add mdplus_directory_report.pdf
+          git commit -m 'Render Airtable Report' || echo "No changes to commit"
+          git push origin || echo "No changes to commit"
