@@ -11,6 +11,7 @@
 
 query_airtable <- function(sheet_url = "https://docs.google.com/spreadsheets/d/1dCOcNwOYZDQXeyAHnc5ypDyaKmwm0OOKWq5nFAWR924/edit#gid=417127965") {
   options(gargle_oauth_email = "lathanliu21@gmail.com")
+  gs4_deauth()
   read_sheet(sheet_url) %>%
     clean_names()
 }
