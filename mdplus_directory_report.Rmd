@@ -9,12 +9,20 @@ subtitle: From Airtable
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+install.packages(c("dplyr", "googlesheets4", "janitor", "knitr"))
 library(dplyr)
-library(tidyr)
 library(googlesheets4)
 library(janitor)
 library(knitr)
-library(mdplus)
+
+query_airtable <- function(sheet_url = "https://docs.google.com/spreadsheets/d/1dCOcNwOYZDQXeyAHnc5ypDyaKmwm0OOKWq5nFAWR924/edit#gid=417127965") {
+  options(gargle_oauth_email = "lathanliu21@gmail.com")
+  gs4_deauth()
+  read_sheet(sheet_url) %>%
+    clean_names()
+}
+
+# library(mdplus)
 airtable <- query_airtable()
 ```
 
