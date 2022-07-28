@@ -3,7 +3,7 @@ Type: Package
 Title: Data Science Tools for MD+
 Version: 0.1.0
 Author: Lathan Liou
-Maintainer: Lathan Liou (lathan.liou@icahn.mssm.edu)
+Maintainer: Lathan Liou <lathan.liou@icahn.mssm.edu>
 Description: TBD
 License: MIT + file LICENSE
 Encoding: UTF-8
