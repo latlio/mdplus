@@ -1,0 +1,97 @@
+---
+title: "MD+ Directory Report"
+author: "Lathan Liou"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+subtitle: From Airtable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(dplyr)
+library(tidyr)
+library(googlesheets4)
+library(janitor)
+library(knitr)
+library(mdplus)
+airtable <- query_airtable()
+```
+
+# Quick Facts
+
+* Number of members in directory: `r nrow(airtable)`
+* Number of medical schools: `r airtable %>% distinct(medical_school) %>% nrow()`
+
+# Breakdowns
+
+## Class Year
+
+```{r class_year}
+airtable %>%
+  filter(!graduation_year %in% c("N/A", "2023/2024", "2025/2026", "2026/2027", "2025+", "2021*", "TBD")) %>%
+  mutate(graduation_year = as.numeric(graduation_year)) %>%
+  group_by(graduation_year) %>%
+  summarize(count = n(),
+            prop = count/nrow(.)) %>%
+  arrange(desc(graduation_year)) %>%
+  kable()
+```
+
+## Medical School
+
+```{r med_school}
+airtable %>%
+  group_by(medical_school) %>%
+  count() %>%
+  arrange(desc(n)) %>%
+  filter(medical_school != "Other") %>%
+  kable()
+```
+
+## Degree
+
+```{r degree}
+airtable %>%
+  group_by(medical_program) %>%
+  summarize(count = n(),
+            prop = count/nrow(.)) %>%
+  arrange(desc(count)) %>%
+  kable()
+```
+
+## Previous Experience
+
+```{r prev_exp}
+airtable %>%
+  select(previous_experiences) %>%
+  separate_rows(previous_experiences, sep = ",") %>%
+  group_by(previous_experiences) %>%
+  summarize(n_mentions = n(),
+            prop_of_total_mentions = n_mentions/nrow(.),
+            prop_of_sample = n_mentions/nrow(airtable)) %>%
+  arrange(desc(n_mentions)) %>%
+  slice(1:20) %>%
+  kable()
+
+airtable %>%
+  separate_rows(previous_experiences, sep = ",") %>%
+  filter(previous_job_experience_s != "Academic Researcher") %>%
+  distinct(full_name, .keep_all = TRUE) %>%
+  nrow()
+```
+
+## Interests
+
+```{r interest}
+airtable %>%
+  select(interests) %>%
+  separate_rows(interests, sep = ",") %>%
+  group_by(interests) %>%
+  summarize(n_mentions = n(),
+            prop_of_total_mentions = n_mentions/nrow(.),
+            prop_of_sample = n_mentions/nrow(airtable)) %>%
+  arrange(desc(n_mentions)) %>%
+  kable()
+```
+
